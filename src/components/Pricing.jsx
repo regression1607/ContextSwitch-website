@@ -7,8 +7,8 @@ const PRICING = {
     symbol: '₹',
     currency: 'INR',
     free: 0,
-    pro: 499,
-    enterprise: 999,
+    pro: 49,
+    enterprise: 499,
   },
   USD: {
     symbol: '$',
