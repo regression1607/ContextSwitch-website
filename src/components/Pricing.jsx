@@ -1,10 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SubscriptionModal from './SubscriptionModal';
 
-const plans = [
+// Pricing configuration for different regions
+const PRICING = {
+  INR: {
+    symbol: '₹',
+    currency: 'INR',
+    free: 0,
+    pro: 499,
+    enterprise: 999,
+  },
+  USD: {
+    symbol: '$',
+    currency: 'USD',
+    free: 0,
+    pro: 9.99,
+    enterprise: 29.99,
+  }
+};
+
+const getPlans = (pricing) => [
   {
     name: 'Free',
-    price: '₹0',
+    price: `${pricing.symbol}${pricing.free}`,
     period: 'forever',
     description: 'Perfect for getting started',
     features: [
@@ -17,10 +35,11 @@ const plans = [
     cta: 'Get Started Free',
     popular: false,
     color: '#ffffff',
+    type: 'free',
   },
   {
     name: 'Pro',
-    price: '₹49',
+    price: `${pricing.symbol}${pricing.pro}`,
     period: 'month',
     description: 'Best for regular AI users',
     features: [
@@ -34,33 +53,79 @@ const plans = [
     cta: 'Upgrade to Pro',
     popular: true,
     color: '#c8f542',
+    type: 'paid',
   },
   {
     name: 'Enterprise',
-    price: '₹99',
+    price: `${pricing.symbol}${pricing.enterprise}`,
     period: 'month',
     description: 'For power users & teams',
     features: [
       'Everything in Pro',
-      'Unlimited compressions',
+      '200 compressions',
       'Team sharing (coming soon)',
       'API access',
       'Dedicated support',
       'Custom integrations',
     ],
-    cta: 'Contact Sales',
+    cta: 'Get Enterprise',
     popular: false,
     color: '#a78bfa',
+    type: 'paid',
+  },
+  {
+    name: 'Custom',
+    price: 'Custom',
+    period: 'quote',
+    description: 'Tailored for your organization',
+    features: [
+      'Everything in Enterprise',
+      'Custom user limits',
+      'On-premise deployment',
+      'SLA & compliance',
+      'Dedicated account manager',
+      'Custom training & onboarding',
+    ],
+    cta: 'Contact Sales',
+    popular: false,
+    color: '#60a5fa',
+    type: 'custom',
   },
 ];
 
 const Pricing = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('');
+  const [isIndia, setIsIndia] = useState(true); // Default to India
+  const [loading, setLoading] = useState(true);
+
+  // Detect user's country on component mount
+  useEffect(() => {
+    const detectCountry = async () => {
+      try {
+        // Using free IP geolocation API
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        setIsIndia(data.country_code === 'IN');
+      } catch (error) {
+        // Default to India on error
+        console.log('Could not detect location, defaulting to INR');
+        setIsIndia(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    detectCountry();
+  }, []);
+
+  const pricing = isIndia ? PRICING.INR : PRICING.USD;
+  const plans = getPlans(pricing);
 
   const handlePlanClick = (plan) => {
-    if (plan.name === 'Free') {
+    if (plan.type === 'free') {
       window.open('https://chrome.google.com/webstore', '_blank');
+    } else if (plan.type === 'custom') {
+      window.location.href = '/contact?subject=Custom%20Enterprise%20Plan';
     } else {
       setSelectedPlan(plan.name);
       setModalOpen(true);
@@ -85,7 +150,7 @@ const Pricing = () => {
         </div>
 
         {/* Pricing Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem', alignItems: 'stretch' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', alignItems: 'stretch' }}>
           {plans.map((plan, index) => (
             <div 
               key={index}
@@ -168,8 +233,29 @@ const Pricing = () => {
           ))}
         </div>
 
-        {/* FAQ hint */}
+        {/* Currency Toggle & FAQ hint */}
         <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+          <div style={{ marginBottom: '1rem' }}>
+            <button
+              onClick={() => setIsIndia(!isIndia)}
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '9999px',
+                padding: '0.5rem 1rem',
+                color: 'rgba(255,255,255,0.6)',
+                cursor: 'pointer',
+                fontSize: '0.75rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              <span>🌍</span>
+              Showing prices in {isIndia ? '₹ INR (India)' : '$ USD (International)'}
+              <span style={{ fontSize: '0.65rem' }}>• Click to change</span>
+            </button>
+          </div>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.875rem' }}>
             Cancel anytime. Try the free tier first before upgrading.
           </p>
@@ -179,7 +265,9 @@ const Pricing = () => {
       <SubscriptionModal 
         isOpen={modalOpen} 
         onClose={() => setModalOpen(false)} 
-        plan={selectedPlan} 
+        plan={selectedPlan}
+        currency={pricing.currency}
+        isIndia={isIndia}
       />
     </section>
   );
