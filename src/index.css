@@ -250,18 +250,8 @@ body {
   }
   
   .how-it-works-grid {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    gap: 1rem;
-    padding-bottom: 1rem;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .how-it-works-grid .step-card {
-    min-width: 200px;
-    flex-shrink: 0;
-    scroll-snap-align: start;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
   }
   
   .contact-grid {
@@ -362,7 +352,8 @@ body {
   }
   
   .how-it-works-grid .step-card {
-    min-width: 220px;
+    min-width: 260px;
+    max-width: 280px;
     flex-shrink: 0;
     scroll-snap-align: start;
   }
