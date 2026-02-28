@@ -1,4 +1,28 @@
+# ContextSwitch Robots.txt
+# Website: https://www.context-switch.dev
+
+# Allow all crawlers
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /profile
 
+# Google Bot
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Google Image Bot
+User-agent: Googlebot-Image
+Allow: /
+
+# Bing Bot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Sitemap location
 Sitemap: https://www.context-switch.dev/sitemap.xml
+
+# Host
+Host: https://www.context-switch.dev
