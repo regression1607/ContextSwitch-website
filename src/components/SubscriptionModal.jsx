@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { loadStripe } from '@stripe/stripe-js';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://api.context-switch.dev/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://context-switch-backend.vercel.app/api';
 const STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_your_stripe_public_key';
 
 // Initialize Stripe

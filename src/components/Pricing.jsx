@@ -43,7 +43,6 @@ const getPlans = (pricing) => [
     period: 'month',
     description: 'Best for regular AI users',
     features: [
-      'Everything in Free',
       '50 compressions/month',
       'Cloud sync (coming soon)',
       'Priority support',
@@ -61,7 +60,6 @@ const getPlans = (pricing) => [
     period: 'month',
     description: 'For power users & teams',
     features: [
-      'Everything in Pro',
       '200 compressions',
       'Team sharing (coming soon)',
       'API access',
@@ -79,7 +77,6 @@ const getPlans = (pricing) => [
     period: 'quote',
     description: 'Tailored for your organization',
     features: [
-      'Everything in Enterprise',
       'Custom user limits',
       'On-premise deployment',
       'SLA & compliance',
