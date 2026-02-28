@@ -270,17 +270,23 @@ body {
   
   .hero-stats {
     gap: 2rem !important;
+    width: 100%;
   }
   
   .hero-buttons {
     flex-direction: column;
     width: 100%;
+    align-items: center;
+    padding: 0;
   }
   
   .hero-buttons a,
   .hero-buttons button {
     width: 100%;
+    max-width: 320px;
     justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
   }
   
   .trusted-companies {
@@ -298,6 +304,16 @@ body {
   .currency-toggle {
     flex-direction: column;
     gap: 0.25rem;
+  }
+  
+  /* Fix centering on mobile */
+  section {
+    overflow-x: hidden;
+  }
+  
+  .heading-xl,
+  .heading-lg {
+    padding: 0 0.5rem;
   }
 }
 

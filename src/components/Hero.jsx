@@ -35,7 +35,7 @@ const Hero = () => {
       <div className="floating-shape floating-shape-2" />
 
       {/* Content */}
-      <div style={{ position: 'relative', zIndex: 10, maxWidth: '64rem', margin: '0 auto', padding: '0 1.5rem', textAlign: 'center' }}>
+      <div style={{ position: 'relative', zIndex: 10, maxWidth: '64rem', margin: '0 auto', padding: '0 1rem', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}>
         <h1 
           className="heading-xl"
           style={{ 
@@ -70,6 +70,7 @@ const Hero = () => {
           style={{
             display: 'inline-flex',
             alignItems: 'center',
+            justifyContent: 'center',
             gap: '0.5rem',
             padding: '0.5rem 1rem',
             background: 'rgba(200, 245, 66, 0.1)',
@@ -79,10 +80,13 @@ const Hero = () => {
             opacity: loaded ? 1 : 0,
             transform: loaded ? 'translateY(0)' : 'translateY(20px)',
             transition: 'all 0.8s ease 0.5s',
+            maxWidth: '100%',
+            flexWrap: 'wrap',
+            textAlign: 'center',
           }}
         >
           <span style={{ fontSize: '1rem' }}>🎉</span>
-          <span style={{ color: '#c8f542', fontWeight: 600, fontSize: '0.875rem' }}>
+          <span style={{ color: '#c8f542', fontWeight: 600, fontSize: '0.875rem', textAlign: 'center' }}>
             Free unlimited saves — Stop paying $20/month for AI subscriptions!
           </span>
         </div>
@@ -105,7 +109,7 @@ const Hero = () => {
             target="_blank" 
             rel="noopener noreferrer"
             className="btn-primary"
-            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem 2rem', fontSize: '1rem' }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', padding: '1rem 2rem', fontSize: '1rem', width: '100%', maxWidth: '320px', boxSizing: 'border-box' }}
           >
             <svg style={{ width: '1.25rem', height: '1.25rem' }} viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0C8.21 0 4.831 1.757 2.632 4.501l3.953 6.848A5.454 5.454 0 0 1 12 6.545h10.691A12 12 0 0 0 12 0zM1.931 5.47A11.943 11.943 0 0 0 0 12c0 6.012 4.42 10.991 10.189 11.864l3.953-6.847a5.45 5.45 0 0 1-6.865-2.29zm13.342 2.166a5.446 5.446 0 0 1 1.45 7.09l.002.001h-.002l-3.952 6.848a12.014 12.014 0 0 0 9.229-9.006zM12 16.364a4.364 4.364 0 1 1 0-8.728 4.364 4.364 0 0 1 0 8.728z"/>
@@ -115,7 +119,7 @@ const Hero = () => {
           <a 
             href="#how-it-works" 
             className="btn-secondary"
-            style={{ padding: '1rem 2rem', fontSize: '1rem' }}
+            style={{ padding: '1rem 2rem', fontSize: '1rem', width: '100%', maxWidth: '320px', textAlign: 'center', boxSizing: 'border-box' }}
           >
             See how it works
           </a>
