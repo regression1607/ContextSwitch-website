@@ -100,7 +100,7 @@ const Footer = () => {
                 </button>
               </form>
               <p style={{ fontSize: '0.75rem', color: 'rgba(10,10,10,0.4)', marginTop: '0.75rem' }}>
-                By submitting I consent to receiving occasional emails from ContextSwitch. See <a href="#" style={{ textDecoration: 'underline' }}>Privacy Policy</a>.
+                By submitting I consent to receiving occasional emails from ContextSwitch. See <a href="/privacy" style={{ textDecoration: 'underline' }}>Privacy Policy</a>.
               </p>
             </div>
 

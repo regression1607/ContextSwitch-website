@@ -9,6 +9,8 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [history, setHistory] = useState([]);
+  const [upgradeLoading, setUpgradeLoading] = useState(false);
+  const [upgradeMessage, setUpgradeMessage] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('contextswitch_token');
@@ -62,6 +64,40 @@ const Profile = () => {
     localStorage.removeItem('contextswitch_token');
     localStorage.removeItem('contextswitch_user');
     navigate('/');
+  };
+
+  const handleUpgrade = async () => {
+    setUpgradeLoading(true);
+    setUpgradeMessage('');
+    
+    try {
+      const response = await fetch(`${API_URL}/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: userData?.name || 'User',
+          email: userData?.email || '',
+          phone: '',
+          subject: 'Upgrade to Pro Request',
+          message: `User ${userData?.name} (${userData?.email}) wants to upgrade to Pro plan.\n\nCurrent Plan: ${subscription?.plan || 'free'}\nMonthly Compressions Used: ${usage?.monthlyCompressions || 0}/${limits?.maxCompressionsPerMonth || 50}\nTotal Compressions: ${usage?.totalCompressions || 0}\nMember Since: ${userData?.createdAt ? formatDate(userData.createdAt) : 'N/A'}`
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setUpgradeMessage('success');
+      } else {
+        setUpgradeMessage('error');
+      }
+    } catch (err) {
+      console.error('Upgrade request error:', err);
+      setUpgradeMessage('error');
+    } finally {
+      setUpgradeLoading(false);
+    }
   };
 
   const formatNumber = (num) => {
@@ -148,9 +184,31 @@ const Profile = () => {
             </div>
             
             {subscription?.plan === 'free' && (
-              <button style={styles.upgradeBtn}>
-                Upgrade to Pro
-              </button>
+              <>
+                <button 
+                  onClick={handleUpgrade}
+                  disabled={upgradeLoading || upgradeMessage === 'success'}
+                  style={{
+                    ...styles.upgradeBtn,
+                    opacity: upgradeLoading || upgradeMessage === 'success' ? 0.7 : 1,
+                    cursor: upgradeLoading || upgradeMessage === 'success' ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {upgradeLoading ? 'Sending...' : 
+                   upgradeMessage === 'success' ? 'Request Sent!' : 
+                   'Upgrade to Pro'}
+                </button>
+                {upgradeMessage === 'success' && (
+                  <p style={styles.upgradeSuccess}>
+                    We've received your upgrade request! We'll contact you shortly at {userData?.email}
+                  </p>
+                )}
+                {upgradeMessage === 'error' && (
+                  <p style={styles.upgradeError}>
+                    Failed to send request. Please try again or contact us directly.
+                  </p>
+                )}
+              </>
             )}
           </div>
 
@@ -389,6 +447,26 @@ const styles = {
     fontWeight: '600',
     cursor: 'pointer',
     transition: 'transform 0.2s, box-shadow 0.2s',
+  },
+  upgradeSuccess: {
+    marginTop: '12px',
+    padding: '10px',
+    background: 'rgba(200, 245, 66, 0.1)',
+    border: '1px solid rgba(200, 245, 66, 0.3)',
+    borderRadius: '8px',
+    color: '#c8f542',
+    fontSize: '12px',
+    textAlign: 'center',
+  },
+  upgradeError: {
+    marginTop: '12px',
+    padding: '10px',
+    background: 'rgba(239, 68, 68, 0.1)',
+    border: '1px solid rgba(239, 68, 68, 0.3)',
+    borderRadius: '8px',
+    color: '#f87171',
+    fontSize: '12px',
+    textAlign: 'center',
   },
   historyList: {
     display: 'flex',
