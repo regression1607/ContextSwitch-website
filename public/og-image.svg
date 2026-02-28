@@ -1,0 +1,53 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0a"/>
+      <stop offset="100%" style="stop-color:#1a1a2e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#c8f542"/>
+      <stop offset="100%" style="stop-color:#a3e635"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Grid pattern -->
+  <g opacity="0.1">
+    <line x1="0" y1="0" x2="0" y2="630" stroke="#c8f542" stroke-width="1"/>
+    <line x1="100" y1="0" x2="100" y2="630" stroke="#c8f542" stroke-width="1"/>
+    <line x1="200" y1="0" x2="200" y2="630" stroke="#c8f542" stroke-width="1"/>
+    <line x1="300" y1="0" x2="300" y2="630" stroke="#c8f542" stroke-width="1"/>
+    <line x1="400" y1="0" x2="400" y2="630" stroke="#c8f542" stroke-width="1"/>
+    <line x1="500" y1="0" x2="500" y2="630" stroke="#c8f542" stroke-width="1"/>
+    <line x1="600" y1="0" x2="600" y2="630" stroke="#c8f542" stroke-width="1"/>
+    <line x1="700" y1="0" x2="700" y2="630" stroke="#c8f542" stroke-width="1"/>
+    <line x1="800" y1="0" x2="800" y2="630" stroke="#c8f542" stroke-width="1"/>
+    <line x1="900" y1="0" x2="900" y2="630" stroke="#c8f542" stroke-width="1"/>
+    <line x1="1000" y1="0" x2="1000" y2="630" stroke="#c8f542" stroke-width="1"/>
+    <line x1="1100" y1="0" x2="1100" y2="630" stroke="#c8f542" stroke-width="1"/>
+    <line x1="1200" y1="0" x2="1200" y2="630" stroke="#c8f542" stroke-width="1"/>
+  </g>
+  
+  <!-- Glow effect -->
+  <ellipse cx="600" cy="315" rx="400" ry="200" fill="#c8f542" opacity="0.05"/>
+  
+  <!-- Logo/Icon -->
+  <g transform="translate(500, 150)">
+    <rect x="0" y="0" width="200" height="200" rx="40" fill="#c8f542" opacity="0.1" stroke="#c8f542" stroke-width="3"/>
+    <text x="100" y="130" font-family="Arial, sans-serif" font-size="100" font-weight="bold" fill="#c8f542" text-anchor="middle">CS</text>
+  </g>
+  
+  <!-- Title -->
+  <text x="600" y="420" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">ContextSwitch</text>
+  
+  <!-- Tagline -->
+  <text x="600" y="480" font-family="Arial, sans-serif" font-size="28" fill="#a1a1aa" text-anchor="middle">Save &amp; Restore AI Conversations</text>
+  
+  <!-- Platforms -->
+  <text x="600" y="540" font-family="Arial, sans-serif" font-size="22" fill="#c8f542" text-anchor="middle">ChatGPT • Gemini • Claude</text>
+  
+  <!-- Bottom accent line -->
+  <rect x="400" y="580" width="400" height="4" rx="2" fill="url(#accent)"/>
+</svg>
