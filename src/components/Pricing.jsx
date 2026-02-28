@@ -150,10 +150,11 @@ const Pricing = () => {
         </div>
 
         {/* Pricing Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', alignItems: 'stretch' }}>
+        <div className="pricing-grid">
           {plans.map((plan, index) => (
             <div 
               key={index}
+              className="pricing-card"
               style={{
                 padding: '2rem',
                 borderRadius: '1.5rem',
@@ -191,7 +192,7 @@ const Pricing = () => {
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <span style={{ fontSize: '3rem', fontWeight: 700, color: 'white' }}>{plan.price}</span>
+                <span className="price-display" style={{ fontSize: '3rem', fontWeight: 700, color: 'white' }}>{plan.price}</span>
                 <span style={{ color: 'rgba(255,255,255,0.5)', marginLeft: '0.5rem' }}>/{plan.period}</span>
               </div>
 

@@ -5,6 +5,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [visible, setVisible] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -67,7 +68,7 @@ const Navbar = () => {
           </a>
 
           {/* Desktop Navigation */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+          <div className="desktop-nav">
             {[
               { label: 'Features', href: '#features' },
               { label: 'How it Works', href: '#how-it-works' },
@@ -92,7 +93,7 @@ const Navbar = () => {
           </div>
 
           {/* CTA Buttons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div className="desktop-cta">
             <a 
               href="https://chrome.google.com/webstore" 
               target="_blank" 
@@ -162,9 +163,93 @@ const Navbar = () => {
               </button>
             )}
           </div>
+
+          {/* Mobile Menu Button */}
+          <button 
+            className="mobile-menu-btn"
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open menu"
+          >
+            <svg style={{ width: '1.5rem', height: '1.5rem', color: 'white' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
         </div>
       </div>
     </nav>
+
+    {/* Mobile Menu */}
+    <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`}>
+      <div className="mobile-menu-header">
+        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
+          <div style={{ width: '2.5rem', height: '2.5rem', background: '#c8f542', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg style={{ width: '1.5rem', height: '1.5rem', color: '#0a0a0a' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'white' }}>ContextSwitch</span>
+        </a>
+        <button 
+          onClick={() => setMobileMenuOpen(false)}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.5rem' }}
+          aria-label="Close menu"
+        >
+          <svg style={{ width: '1.5rem', height: '1.5rem', color: 'white' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <div className="mobile-menu-links">
+        {[
+          { label: 'Features', href: '#features' },
+          { label: 'How it Works', href: '#how-it-works' },
+          { label: 'Platforms', href: '#platforms' },
+          { label: 'Pricing', href: '#pricing' },
+          { label: 'Contact', href: '/contact' },
+        ].map((item) => (
+          <a 
+            key={item.label}
+            href={item.href} 
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+      
+      <div className="mobile-menu-cta">
+        <a 
+          href="https://chrome.google.com/webstore" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="btn-primary"
+          style={{ textAlign: 'center', display: 'block' }}
+        >
+          Get Extension - Free
+        </a>
+        {user ? (
+          <>
+            <a href="/profile" style={{ color: 'white', textDecoration: 'none', textAlign: 'center' }}>
+              My Profile
+            </a>
+            <button 
+              onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+              style={{ padding: '0.75rem', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '9999px', background: 'transparent', color: 'white', cursor: 'pointer' }}
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <button 
+            onClick={() => { setAuthModalOpen(true); setMobileMenuOpen(false); }}
+            style={{ padding: '0.75rem', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '9999px', background: 'transparent', color: 'white', cursor: 'pointer' }}
+          >
+            Sign in
+          </button>
+        )}
+      </div>
+    </div>
     
     <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
   </>

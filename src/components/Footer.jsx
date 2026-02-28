@@ -17,7 +17,7 @@ const Footer = () => {
       <div style={{ background: '#c8f542', padding: '2rem 0' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.5rem' }}>
           <p style={{ textAlign: 'center', color: 'rgba(10,10,10,0.6)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>Trusted by developers at</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '3rem' }}>
+          <div className="trusted-companies" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '3rem' }}>
             {['Google', 'Meta', 'Amazon', 'Microsoft', 'Apple'].map((company) => (
               <span key={company} style={{ fontSize: '1.5rem', fontWeight: 700, color: 'rgba(10,10,10,0.4)' }}>{company}</span>
             ))}
@@ -60,7 +60,7 @@ const Footer = () => {
       {/* Main Footer */}
       <div style={{ background: 'white', padding: '4rem 0' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.5rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '3rem' }}>
+          <div className="footer-grid">
             {/* Logo & Newsletter */}
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
@@ -74,7 +74,7 @@ const Footer = () => {
               <p style={{ color: 'rgba(10,10,10,0.6)', marginBottom: '1.5rem', maxWidth: '20rem' }}>
                 Subscribe for updates, new features, and AI productivity tips.
               </p>
-              <form style={{ display: 'flex', gap: '0.5rem' }}>
+              <form className="footer-form" style={{ display: 'flex', gap: '0.5rem' }}>
                 <input 
                   type="email" 
                   placeholder="Email*"

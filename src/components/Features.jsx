@@ -99,11 +99,7 @@ const Features = () => {
         </div>
 
         {/* Features Grid */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(3, 1fr)', 
-          gap: '1.5rem',
-        }}>
+        <div className="features-grid">
           {features.map((feature, index) => (
             <div 
               key={index}

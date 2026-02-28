@@ -88,6 +88,7 @@ const Hero = () => {
         </div>
 
         <div 
+          className="hero-buttons"
           style={{ 
             display: 'flex', 
             gap: '1rem', 
@@ -122,6 +123,7 @@ const Hero = () => {
 
         {/* Stats */}
         <div 
+          className="hero-stats"
           style={{ 
             marginTop: '4rem', 
             display: 'flex', 
