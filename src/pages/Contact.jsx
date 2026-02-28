@@ -54,7 +54,7 @@ const Contact = () => {
           Have questions or need help? We'd love to hear from you.
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem' }}>
+        <div className="contact-grid">
           {/* Contact Info */}
           <div>
             <h3 style={{ color: 'white', fontSize: '1.25rem', marginBottom: '1.5rem' }}>Get in Touch</h3>

@@ -222,6 +222,18 @@ body {
   gap: 3rem;
 }
 
+.how-it-works-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
 /* Tablet Styles */
 @media (max-width: 1024px) {
   .pricing-grid {
@@ -235,6 +247,26 @@ body {
   
   .footer-grid {
     grid-template-columns: 1fr 1fr;
+  }
+  
+  .how-it-works-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .how-it-works-grid .step-card {
+    min-width: 200px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+  
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
 }
 
@@ -307,13 +339,37 @@ body {
   }
   
   /* Fix centering on mobile */
-  section {
+  section:not(#how-it-works) {
     overflow-x: hidden;
+  }
+  
+  #how-it-works {
+    overflow-x: visible;
   }
   
   .heading-xl,
   .heading-lg {
     padding: 0 0.5rem;
+  }
+  
+  .how-it-works-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .how-it-works-grid .step-card {
+    min-width: 220px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+  
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
 }
 

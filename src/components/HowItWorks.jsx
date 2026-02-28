@@ -39,9 +39,9 @@ const HowItWorks = () => {
         </div>
 
         {/* Steps */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem' }}>
+        <div className="how-it-works-grid">
           {steps.map((step, index) => (
-            <div key={index}>
+            <div key={index} className="step-card">
               <div style={{ 
                 fontSize: '3rem', 
                 fontWeight: 700, 
