@@ -13,13 +13,13 @@ const socialIconStyle = {
 const Footer = () => {
   return (
     <footer>
-      {/* Trusted By Section */}
+      {/* Built For Section */}
       <div style={{ background: '#c8f542', padding: '2rem 0' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.5rem' }}>
-          <p style={{ textAlign: 'center', color: 'rgba(10,10,10,0.6)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>Trusted by developers at</p>
+          <p style={{ textAlign: 'center', color: 'rgba(10,10,10,0.6)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>Built for</p>
           <div className="trusted-companies" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '3rem' }}>
-            {['Google', 'Meta', 'Amazon', 'Microsoft', 'Apple'].map((company) => (
-              <span key={company} style={{ fontSize: '1.5rem', fontWeight: 700, color: 'rgba(10,10,10,0.4)' }}>{company}</span>
+            {['Developers', 'Researchers', 'Writers', 'Students', 'Professionals'].map((user) => (
+              <span key={user} style={{ fontSize: '1.5rem', fontWeight: 700, color: 'rgba(10,10,10,0.4)' }}>{user}</span>
             ))}
           </div>
         </div>
@@ -117,13 +117,19 @@ const Footer = () => {
                 <li style={{ marginBottom: '0.75rem' }}>
                   <a href="/refund" style={{ color: 'rgba(10,10,10,0.6)', textDecoration: 'none' }}>Cancellation Policy</a>
                 </li>
+                <li style={{ marginBottom: '0.75rem' }}>
+                  <a href="/faq" style={{ color: 'rgba(10,10,10,0.6)', textDecoration: 'none' }}>FAQ</a>
+                </li>
               </ul>
             </div>
 
-            {/* Legal Links */}
+            {/* Company Links */}
             <div>
-              <h4 style={{ fontWeight: 600, color: '#0a0a0a', marginBottom: '1rem' }}>Legal</h4>
+              <h4 style={{ fontWeight: 600, color: '#0a0a0a', marginBottom: '1rem' }}>Company</h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                <li style={{ marginBottom: '0.75rem' }}>
+                  <a href="/about" style={{ color: 'rgba(10,10,10,0.6)', textDecoration: 'none' }}>About Us</a>
+                </li>
                 <li style={{ marginBottom: '0.75rem' }}>
                   <a href="/privacy" style={{ color: 'rgba(10,10,10,0.6)', textDecoration: 'none' }}>Privacy Policy</a>
                 </li>

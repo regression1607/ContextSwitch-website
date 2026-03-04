@@ -95,7 +95,7 @@ const Navbar = () => {
           {/* CTA Buttons */}
           <div className="desktop-cta">
             <a 
-              href="https://chrome.google.com/webstore" 
+              href="https://chromewebstore.google.com/detail/contextswitch/dihbofoieacondcebbkehcjhiafhhomd" 
               target="_blank" 
               rel="noopener noreferrer"
               className="btn-primary"
@@ -220,7 +220,7 @@ const Navbar = () => {
       
       <div className="mobile-menu-cta">
         <a 
-          href="https://chrome.google.com/webstore" 
+          href="https://chromewebstore.google.com/detail/contextswitch/dihbofoieacondcebbkehcjhiafhhomd" 
           target="_blank" 
           rel="noopener noreferrer"
           className="btn-primary"

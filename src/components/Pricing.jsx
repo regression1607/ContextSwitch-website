@@ -120,7 +120,7 @@ const Pricing = () => {
 
   const handlePlanClick = (plan) => {
     if (plan.type === 'free') {
-      window.open('https://chrome.google.com/webstore', '_blank');
+      window.open('https://chromewebstore.google.com/detail/contextswitch/dihbofoieacondcebbkehcjhiafhhomd', '_blank');
     } else if (plan.type === 'custom') {
       window.location.href = '/contact?subject=Custom%20Enterprise%20Plan';
     } else {

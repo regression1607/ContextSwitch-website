@@ -92,7 +92,7 @@ const Platforms = () => {
         <div style={{ marginTop: '4rem', textAlign: 'center' }}>
           <p style={{ color: 'rgba(255,255,255,0.4)', marginBottom: '1.5rem' }}>More platforms coming soon...</p>
           <a 
-            href="https://chrome.google.com/webstore" 
+            href="https://chromewebstore.google.com/detail/contextswitch/dihbofoieacondcebbkehcjhiafhhomd" 
             target="_blank" 
             rel="noopener noreferrer"
             className="btn-primary"

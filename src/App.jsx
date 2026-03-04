@@ -12,6 +12,8 @@ import Terms from './pages/Terms'
 import Refund from './pages/Refund'
 import Disclaimer from './pages/Disclaimer'
 import Profile from './pages/Profile'
+import About from './pages/About'
+import FAQ from './pages/FAQ'
 
 function HomePage() {
   return (
@@ -38,6 +40,8 @@ function App() {
           <Route path="/refund" element={<Refund />} />
           <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/faq" element={<FAQ />} />
         </Routes>
         <Footer />
       </div>
