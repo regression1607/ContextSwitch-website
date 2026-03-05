@@ -1,12 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { loadStripe } from '@stripe/stripe-js';
 
 const API_URL = 'https://context-switch-backend.vercel.app/api';
-const STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_your_stripe_public_key';
-
-// Initialize Stripe
-const stripePromise = loadStripe(STRIPE_PUBLIC_KEY);
 
 // Plan pricing configuration based on currency
 const PLAN_CONFIG = {
@@ -37,14 +32,7 @@ const SubscriptionModal = ({ isOpen, onClose, plan, currency = 'INR', isIndia = 
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ type: '', message: '' });
 
-  const handleCheckout = async () => {
-    const token = localStorage.getItem('contextswitch_token');
-    
-    if (!token) {
-      setStatus({ type: 'error', message: 'Please login first to subscribe' });
-      return;
-    }
-
+  const handleSubscriptionRequest = async () => {
     setLoading(true);
     setStatus({ type: '', message: '' });
 
@@ -52,30 +40,37 @@ const SubscriptionModal = ({ isOpen, onClose, plan, currency = 'INR', isIndia = 
       const currencyConfig = PLAN_CONFIG[currency] || PLAN_CONFIG.INR;
       const planConfig = currencyConfig[plan];
       const priceConfig = planConfig[billingCycle];
+      
+      // Get user info if logged in
+      const userData = JSON.parse(localStorage.getItem('contextswitch_user') || '{}');
 
-      const response = await fetch(`${API_URL}/stripe/create-checkout-session`, {
+      // Send subscription interest email to admin
+      const response = await fetch(`${API_URL}/contact/subscription`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ 
-          priceId: priceConfig.priceId,
-          planType: plan.toLowerCase(),
-          currency: currency
+          name: userData.name || 'Guest User',
+          email: userData.email || 'Not logged in',
+          phone: '',
+          plan: `${plan} - ${billingCycle} (${priceConfig.price})`,
+          message: `User wants to subscribe to ${plan} plan.\n\nBilling: ${billingCycle}\nPrice: ${priceConfig.price}\nCurrency: ${currency}`
         }),
       });
 
       const data = await response.json();
 
-      if (data.success && data.url) {
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
+      if (data.success) {
+        setStatus({ 
+          type: 'success', 
+          message: 'Request sent! We will contact you within 24 hours to complete your subscription.' 
+        });
       } else {
-        setStatus({ type: 'error', message: data.message || 'Failed to create checkout session' });
+        setStatus({ type: 'error', message: data.message || 'Failed to send request' });
       }
     } catch (error) {
-      setStatus({ type: 'error', message: 'Failed to process. Please try again.' });
+      setStatus({ type: 'error', message: 'Failed to send request. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -259,17 +254,17 @@ const SubscriptionModal = ({ isOpen, onClose, plan, currency = 'INR', isIndia = 
         )}
 
         <button
-          onClick={handleCheckout}
-          disabled={loading}
+          onClick={handleSubscriptionRequest}
+          disabled={loading || status.type === 'success'}
           style={{
             width: '100%',
             padding: '1rem',
-            background: '#c8f542',
+            background: status.type === 'success' ? '#34d399' : '#c8f542',
             color: '#0a0a0a',
             fontWeight: 600,
             borderRadius: '0.5rem',
             border: 'none',
-            cursor: loading ? 'not-allowed' : 'pointer',
+            cursor: (loading || status.type === 'success') ? 'not-allowed' : 'pointer',
             opacity: loading ? 0.7 : 1,
             fontSize: '1rem',
             display: 'flex',
@@ -278,18 +273,25 @@ const SubscriptionModal = ({ isOpen, onClose, plan, currency = 'INR', isIndia = 
             gap: '0.5rem'
           }}
         >
-          {loading ? 'Processing...' : (
+          {loading ? 'Sending Request...' : status.type === 'success' ? (
             <>
               <svg style={{ width: '1.25rem', height: '1.25rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              Proceed to Checkout
+              Request Sent!
+            </>
+          ) : (
+            <>
+              <svg style={{ width: '1.25rem', height: '1.25rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Request Subscription
             </>
           )}
         </button>
 
         <p style={{ textAlign: 'center', marginTop: '1rem', color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>
-          Secure payment powered by Stripe. Cancel anytime.
+          We'll contact you within 24 hours to complete your subscription.
         </p>
 
         {/* Close button */}
