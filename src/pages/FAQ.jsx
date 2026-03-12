@@ -6,7 +6,7 @@ const FAQ = () => {
     },
     {
       question: "How do I install ContextSwitch?",
-      answer: "Visit the Chrome Web Store, search for 'ContextSwitch', and click 'Add to Chrome'. Once installed, you'll see the ContextSwitch icon in your browser toolbar. Click it to start saving your AI conversations."
+      answer: "Visit the Chrome Web Store, search for 'ContextSwitch', and click 'Add to Browser'. Once installed, you'll see the ContextSwitch icon in your browser toolbar. Click it to start saving your AI conversations."
     },
     {
       question: "Is ContextSwitch free to use?",
