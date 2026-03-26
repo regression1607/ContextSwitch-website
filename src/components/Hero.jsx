@@ -86,7 +86,7 @@ const Hero = () => {
           }}
         >
           <span style={{ color: '#c8f542', fontWeight: 600, fontSize: '0.875rem', textAlign: 'center' }}>
-            🎉 Free unlimited saves — Stop paying $20/month for AI subscriptions!
+            🎉 Free unlimited saves + NEW AI Hub — Share prompts, news, updates & more!
           </span>
         </div>
 

@@ -21,8 +21,9 @@ User-agent: Bingbot
 Allow: /
 Crawl-delay: 1
 
-# Sitemap location
+# Sitemap locations
 Sitemap: https://www.context-switch.dev/sitemap.xml
+Sitemap: https://context-switch-backend.vercel.app/api/posts/sitemap
 
 # Host
 Host: https://www.context-switch.dev

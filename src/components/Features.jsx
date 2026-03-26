@@ -69,6 +69,17 @@ const features = [
     description: 'Lightweight extension that won\'t slow down your browser. Save and load in milliseconds.',
     color: 'yellow',
   },
+  {
+    icon: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+      </svg>
+    ),
+    title: 'AI Hub',
+    description: 'Share prompts, AI news, updates, tutorials, and more. Pick a template, get a shareable link, and post to social media.',
+    color: 'purple',
+    link: '/posts',
+  },
 ];
 
 const colorStyles = {
@@ -100,36 +111,64 @@ const Features = () => {
 
         {/* Features Grid */}
         <div className="features-grid">
-          {features.map((feature, index) => (
-            <div 
-              key={index}
-              className="feature-card"
-              style={{
-                padding: '1.5rem',
-                borderRadius: '1rem',
-                background: 'rgba(255,255,255,0.02)',
-                border: '1px solid rgba(255,255,255,0.05)',
-                transition: 'all 0.3s',
-                cursor: 'default',
-              }}
-            >
-              <div style={{
-                width: '3.5rem',
-                height: '3.5rem',
-                borderRadius: '0.75rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '1.25rem',
-                border: '1px solid',
-                ...colorStyles[feature.color],
-              }}>
-                {feature.icon}
-              </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'white', marginBottom: '0.75rem' }}>{feature.title}</h3>
-              <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>{feature.description}</p>
-            </div>
-          ))}
+          {features.map((feature, index) => {
+            const CardTag = feature.link ? 'a' : 'div';
+            const linkProps = feature.link ? { href: feature.link, style: { textDecoration: 'none' } } : {};
+            return (
+              <CardTag
+                key={index}
+                {...linkProps}
+                className="feature-card"
+                style={{
+                  padding: '1.5rem',
+                  borderRadius: '1rem',
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  transition: 'all 0.3s',
+                  cursor: feature.link ? 'pointer' : 'default',
+                  textDecoration: 'none',
+                  display: 'block',
+                }}
+              >
+                <div style={{
+                  width: '3.5rem',
+                  height: '3.5rem',
+                  borderRadius: '0.75rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '1.25rem',
+                  border: '1px solid',
+                  ...colorStyles[feature.color],
+                }}>
+                  {feature.icon}
+                </div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'white', marginBottom: '0.75rem' }}>
+                  {feature.title}
+                  {feature.link && (
+                    <span style={{ color: colorStyles[feature.color]?.color, fontSize: '0.75rem', fontWeight: 500, marginLeft: '0.5rem' }}>NEW</span>
+                  )}
+                </h3>
+                <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>{feature.description}</p>
+                {feature.link && (
+                  <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.3rem',
+                    marginTop: '0.75rem',
+                    color: colorStyles[feature.color]?.color,
+                    fontSize: '0.85rem',
+                    fontWeight: 500,
+                  }}>
+                    Explore Prompt Hub
+                    <svg style={{ width: '14px', height: '14px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                )}
+              </CardTag>
+            );
+          })}
         </div>
       </div>
     </section>

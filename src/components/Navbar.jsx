@@ -73,6 +73,7 @@ const Navbar = () => {
               { label: 'Features', href: '#features' },
               { label: 'How it Works', href: '#how-it-works' },
               { label: 'Platforms', href: '#platforms' },
+              { label: 'AI Hub', href: '/posts' },
               { label: 'Pricing', href: '#pricing' },
             ].map((item) => (
               <a 
@@ -205,6 +206,7 @@ const Navbar = () => {
           { label: 'Features', href: '#features' },
           { label: 'How it Works', href: '#how-it-works' },
           { label: 'Platforms', href: '#platforms' },
+          { label: 'AI Hub', href: '/posts' },
           { label: 'Pricing', href: '#pricing' },
           { label: 'Contact', href: '/contact' },
         ].map((item) => (

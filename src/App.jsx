@@ -14,6 +14,12 @@ import Disclaimer from './pages/Disclaimer'
 import Profile from './pages/Profile'
 import About from './pages/About'
 import FAQ from './pages/FAQ'
+import Posts from './pages/Posts'
+import CreatePost from './pages/CreatePost'
+import PostDetail from './pages/PostDetail'
+import RecentPosts from './components/RecentPosts'
+import PromptHubPreview from './components/PromptHubPreview'
+import PostsShowcase from './components/PostsShowcase'
 
 function HomePage() {
   return (
@@ -22,6 +28,9 @@ function HomePage() {
       <Features />
       <HowItWorks />
       <Platforms />
+      <PromptHubPreview />
+      <PostsShowcase />
+      <RecentPosts />
       <Pricing />
     </>
   )
@@ -42,6 +51,9 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/about" element={<About />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/posts" element={<Posts />} />
+          <Route path="/posts/create" element={<CreatePost />} />
+          <Route path="/posts/:id" element={<PostDetail />} />
         </Routes>
         <Footer />
       </div>
