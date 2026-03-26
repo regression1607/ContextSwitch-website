@@ -251,11 +251,16 @@ const PostDetail = () => {
   return (
     <div style={{ minHeight: '100vh', background: tpl.pageBg, paddingTop: '5rem' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem 1.5rem' }}>
-        {/* Back button */}
-        <button onClick={() => navigate('/posts')} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', marginBottom: '1.5rem', padding: 0 }}>
-          <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-          Back to Posts
-        </button>
+        {/* Breadcrumb navigation (SEO + UX) */}
+        <nav aria-label="Breadcrumb" style={{ marginBottom: '1.5rem' }}>
+          <ol style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', listStyle: 'none', padding: 0, margin: 0, fontSize: '0.82rem' }}>
+            <li><a href="/" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>Home</a></li>
+            <li style={{ color: 'rgba(255,255,255,0.25)' }}>/</li>
+            <li><a href="/posts" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>AI Hub</a></li>
+            <li style={{ color: 'rgba(255,255,255,0.25)' }}>/</li>
+            <li style={{ color: '#c8f542', fontWeight: 500, maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{post?.title || 'Post'}</li>
+          </ol>
+        </nav>
 
         {/* Template card wrapper */}
         <div style={{

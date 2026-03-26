@@ -17,6 +17,7 @@ import FAQ from './pages/FAQ'
 import Posts from './pages/Posts'
 import CreatePost from './pages/CreatePost'
 import PostDetail from './pages/PostDetail'
+import NotFound from './pages/NotFound'
 import RecentPosts from './components/RecentPosts'
 import PromptHubPreview from './components/PromptHubPreview'
 import PostsShowcase from './components/PostsShowcase'
@@ -54,6 +55,7 @@ function App() {
           <Route path="/posts" element={<Posts />} />
           <Route path="/posts/create" element={<CreatePost />} />
           <Route path="/posts/:id" element={<PostDetail />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </div>

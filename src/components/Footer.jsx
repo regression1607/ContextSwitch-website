@@ -104,6 +104,25 @@ const Footer = () => {
               </p>
             </div>
 
+            {/* Product Links */}
+            <div>
+              <h4 style={{ fontWeight: 600, color: '#0a0a0a', marginBottom: '1rem' }}>Product</h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                <li style={{ marginBottom: '0.75rem' }}>
+                  <a href="/posts" style={{ color: 'rgba(10,10,10,0.6)', textDecoration: 'none' }}>AI Hub</a>
+                </li>
+                <li style={{ marginBottom: '0.75rem' }}>
+                  <a href="/#features" style={{ color: 'rgba(10,10,10,0.6)', textDecoration: 'none' }}>Features</a>
+                </li>
+                <li style={{ marginBottom: '0.75rem' }}>
+                  <a href="/#pricing" style={{ color: 'rgba(10,10,10,0.6)', textDecoration: 'none' }}>Pricing</a>
+                </li>
+                <li style={{ marginBottom: '0.75rem' }}>
+                  <a href="/api/posts/rss.xml" style={{ color: 'rgba(10,10,10,0.6)', textDecoration: 'none' }}>RSS Feed</a>
+                </li>
+              </ul>
+            </div>
+
             {/* Support Links */}
             <div>
               <h4 style={{ fontWeight: 600, color: '#0a0a0a', marginBottom: '1rem' }}>Support</h4>

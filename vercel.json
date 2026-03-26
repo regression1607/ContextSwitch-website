@@ -9,6 +9,14 @@
       "destination": "https://context-switch-backend.vercel.app/api/posts/sitemap"
     },
     {
+      "source": "/api/posts/rss.xml",
+      "destination": "https://context-switch-backend.vercel.app/api/posts/rss.xml"
+    },
+    {
+      "source": "/api/posts/rss",
+      "destination": "https://context-switch-backend.vercel.app/api/posts/rss"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

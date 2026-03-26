@@ -44,6 +44,25 @@ const Posts = () => {
 
   const isLoggedIn = !!localStorage.getItem('contextswitch_token');
 
+  // Dynamic SEO meta tags for the Posts listing page
+  useEffect(() => {
+    document.title = 'AI Hub - Prompts, News, Tutorials & Discussions | ContextSwitch';
+    const setMeta = (attr, key, value) => {
+      let el = document.querySelector(`meta[${attr}="${key}"]`);
+      if (!el) { el = document.createElement('meta'); el.setAttribute(attr, key); document.head.appendChild(el); }
+      el.setAttribute('content', value);
+    };
+    setMeta('name', 'description', 'Explore AI prompts, news, tutorials, and discussions shared by the ContextSwitch community. Find the best ChatGPT, Claude, and Gemini prompts. Free and public.');
+    setMeta('property', 'og:title', 'AI Hub - Prompts, News & Tutorials | ContextSwitch');
+    setMeta('property', 'og:description', 'Community-driven AI prompts, news, tutorials, and discussions. Free and public.');
+    setMeta('property', 'og:url', 'https://www.context-switch.dev/posts');
+    setMeta('property', 'og:type', 'website');
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) { canonical = document.createElement('link'); canonical.setAttribute('rel', 'canonical'); document.head.appendChild(canonical); }
+    canonical.setAttribute('href', 'https://www.context-switch.dev/posts');
+    return () => { document.title = 'ContextSwitch - Save ChatGPT, Gemini 2.0, Claude 3.5 Conversations | AI Context Manager'; };
+  }, []);
+
   useEffect(() => {
     fetchPosts();
   }, [page, category, platform, sort, search]);
