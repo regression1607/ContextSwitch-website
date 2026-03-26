@@ -23,7 +23,7 @@ Crawl-delay: 1
 
 # Sitemap locations
 Sitemap: https://www.context-switch.dev/sitemap.xml
-Sitemap: https://context-switch-backend.vercel.app/api/posts/sitemap
+Sitemap: https://context-switch-backend.vercel.app/api/posts/sitemap.xml
 
 # Host
 Host: https://www.context-switch.dev
