@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/api/posts/sitemap.xml",
+      "destination": "https://context-switch-backend.vercel.app/api/posts/sitemap.xml"
+    },
+    {
+      "source": "/api/posts/sitemap",
+      "destination": "https://context-switch-backend.vercel.app/api/posts/sitemap"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
