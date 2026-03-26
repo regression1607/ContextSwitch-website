@@ -103,7 +103,20 @@ const PostsShowcase = () => {
         </div>
       </div>
 
-      {/* Scrolling container */}
+      {/* Scrolling container with edge blur */}
+      <div style={{ position: 'relative' }}>
+        {/* Left fade */}
+        <div style={{
+          position: 'absolute', top: 0, left: 0, bottom: 0, width: '80px', zIndex: 2,
+          background: 'linear-gradient(to right, #0a0a0a, transparent)',
+          pointerEvents: 'none',
+        }} />
+        {/* Right fade */}
+        <div style={{
+          position: 'absolute', top: 0, right: 0, bottom: 0, width: '80px', zIndex: 2,
+          background: 'linear-gradient(to left, #0a0a0a, transparent)',
+          pointerEvents: 'none',
+        }} />
       <div
         ref={scrollRef}
         onMouseEnter={() => setPaused(true)}
@@ -112,8 +125,8 @@ const PostsShowcase = () => {
           display: 'flex',
           gap: '1rem',
           overflow: 'hidden',
-          paddingLeft: '1.5rem',
-          paddingRight: '1.5rem',
+          paddingLeft: '5rem',
+          paddingRight: '5rem',
           cursor: 'grab',
         }}
       >
@@ -221,6 +234,7 @@ const PostsShowcase = () => {
             </div>
           );
         })}
+      </div>
       </div>
     </section>
   );

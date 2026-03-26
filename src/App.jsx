@@ -26,11 +26,11 @@ function HomePage() {
   return (
     <>
       <Hero />
+      <PostsShowcase />
       <Features />
       <HowItWorks />
       <Platforms />
       <PromptHubPreview />
-      <PostsShowcase />
       <RecentPosts />
       <Pricing />
     </>
