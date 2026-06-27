@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PostCard from '../components/PostCard';
 
-const API_URL = 'https://context-switch-backend.vercel.app/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://context-switch-backend.vercel.app/api';
 
 const CATEGORIES = [
   { value: 'all', label: 'All' },
