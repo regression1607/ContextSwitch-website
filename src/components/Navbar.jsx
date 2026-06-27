@@ -1,12 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AuthModal from './AuthModal';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [visible, setVisible] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
+
+  const handleNavClick = useCallback((e, href) => {
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      if (location.pathname !== '/') {
+        // Navigate to home first, then scroll to section
+        navigate('/');
+        setTimeout(() => {
+          const el = document.querySelector(href);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      } else {
+        const el = document.querySelector(href);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [location.pathname, navigate]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -79,6 +99,7 @@ const Navbar = () => {
               <a 
                 key={item.label}
                 href={item.href} 
+                onClick={(e) => handleNavClick(e, item.href)}
                 style={{ 
                   color: 'rgba(255,255,255,0.7)', 
                   textDecoration: 'none',
@@ -213,7 +234,7 @@ const Navbar = () => {
           <a 
             key={item.label}
             href={item.href} 
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={(e) => { handleNavClick(e, item.href); setMobileMenuOpen(false); }}
           >
             {item.label}
           </a>

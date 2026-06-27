@@ -40,9 +40,12 @@ const Terms = () => {
             <h2 style={{ color: 'white', fontSize: '1.5rem', marginBottom: '1rem' }}>4. Subscription & Payments</h2>
             <ul style={{ paddingLeft: '1.5rem' }}>
               <li style={{ marginBottom: '0.5rem' }}>Free tier includes unlimited context saves with local storage</li>
-              <li style={{ marginBottom: '0.5rem' }}>Paid plans provide additional features including AI compression</li>
-              <li style={{ marginBottom: '0.5rem' }}>Subscription fees are billed monthly and are non-refundable except as stated in our Refund Policy</li>
+              <li style={{ marginBottom: '0.5rem' }}>Paid plans (Pro, Enterprise) provide additional features including AI compression</li>
+              <li style={{ marginBottom: '0.5rem' }}>Payments are processed securely through Razorpay, a PCI-DSS compliant payment gateway. We do not store your card or bank details on our servers</li>
+              <li style={{ marginBottom: '0.5rem' }}>Subscription fees are billed monthly or yearly and are non-refundable except as stated in our <a href="/refund" style={{ color: '#c8f542' }}>Cancellation & Refund Policy</a></li>
+              <li style={{ marginBottom: '0.5rem' }}>Accepted payment methods include UPI, debit/credit cards, net banking, and wallets (subject to availability via Razorpay)</li>
               <li style={{ marginBottom: '0.5rem' }}>We reserve the right to change pricing with 30 days notice</li>
+              <li style={{ marginBottom: '0.5rem' }}>All prices are inclusive of applicable taxes unless stated otherwise</li>
             </ul>
           </section>
 
@@ -122,7 +125,16 @@ const Terms = () => {
               For questions about these Terms, please contact us at:
             </p>
             <p style={{ marginTop: '1rem' }}>
+              <strong>Business Name:</strong> ContextSwitch
+            </p>
+            <p style={{ marginTop: '0.5rem' }}>
               <strong>Email:</strong> <a href="mailto:ekanshrajput1607@gmail.com" style={{ color: '#c8f542' }}>ekanshrajput1607@gmail.com</a>
+            </p>
+            <p style={{ marginTop: '0.5rem' }}>
+              <strong>Address:</strong> India
+            </p>
+            <p style={{ marginTop: '0.5rem' }}>
+              <strong>Website:</strong> <a href="https://www.context-switch.dev" style={{ color: '#c8f542' }}>https://www.context-switch.dev</a>
             </p>
           </section>
         </div>
