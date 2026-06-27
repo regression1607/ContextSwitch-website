@@ -133,6 +133,8 @@ const SubscriptionModal = ({ isOpen, onClose, plan, currency = 'INR', isIndia = 
               storedUser.limits = verifyData.data.limits;
               localStorage.setItem('contextswitch_user', JSON.stringify(storedUser));
               if (onSuccess) onSuccess(verifyData.data);
+              // Auto-close modal after 2 seconds
+              setTimeout(() => onClose(), 2000);
             } else {
               setStatus({ type: 'error', message: verifyData.message || 'Payment verification failed' });
             }

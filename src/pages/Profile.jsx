@@ -119,7 +119,21 @@ const Profile = () => {
     );
   }
 
-  const { user: userData, subscription, usage, limits } = user || {};
+  const { user: userData, subscription: rawSubscription, usage, limits } = user || {};
+
+  // Calculate daysRemaining on frontend if backend didn't provide it
+  const subscription = rawSubscription ? {
+    ...rawSubscription,
+    daysRemaining: rawSubscription.daysRemaining ?? (
+      rawSubscription.endDate && rawSubscription.plan !== 'free'
+        ? Math.max(0, Math.ceil((new Date(rawSubscription.endDate) - new Date()) / (1000 * 60 * 60 * 24)))
+        : null
+    ),
+    isExpired: rawSubscription.isExpired ?? (
+      rawSubscription.status === 'expired' || 
+      (rawSubscription.endDate && new Date(rawSubscription.endDate) < new Date())
+    ),
+  } : {};
 
   return (
     <div style={styles.container}>
