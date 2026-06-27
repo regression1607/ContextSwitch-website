@@ -97,12 +97,16 @@ const getPlans = (pricing, billingCycle) => {
   ];
 };
 
+const API_URL = 'https://context-switch-backend.vercel.app/api';
+
 const Pricing = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('');
   const [billingCycle, setBillingCycle] = useState('monthly');
   const [isIndia, setIsIndia] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [customLoading, setCustomLoading] = useState(false);
+  const [customStatus, setCustomStatus] = useState('');
 
   // Auto-detect currency silently
   useEffect(() => {
@@ -123,11 +127,33 @@ const Pricing = () => {
   const pricing = isIndia ? PRICING.INR : PRICING.USD;
   const plans = getPlans(pricing, billingCycle);
 
-  const handlePlanClick = (plan) => {
+  const handlePlanClick = async (plan) => {
     if (plan.type === 'free') {
       window.open('https://chromewebstore.google.com/detail/contextswitch/dihbofoieacondcebbkehcjhiafhhomd', '_blank');
     } else if (plan.type === 'custom') {
-      window.location.href = '/contact?subject=Custom%20Enterprise%20Plan';
+      setCustomLoading(true);
+      setCustomStatus('');
+      try {
+        const userData = JSON.parse(localStorage.getItem('contextswitch_user') || '{}');
+        const response = await fetch(`${API_URL}/contact/subscription`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: userData.name || 'Guest User',
+            email: userData.email || 'Not logged in',
+            phone: '',
+            plan: 'Custom Enterprise',
+            message: `User is interested in Custom Enterprise plan.\nCurrency: ${pricing.currency}`,
+          }),
+        });
+        const data = await response.json();
+        setCustomStatus(data.success ? 'success' : 'error');
+      } catch {
+        setCustomStatus('error');
+      } finally {
+        setCustomLoading(false);
+        setTimeout(() => setCustomStatus(''), 5000);
+      }
     } else {
       setSelectedPlan(plan.name);
       setModalOpen(true);
@@ -293,19 +319,28 @@ const Pricing = () => {
 
               <button
                 onClick={() => handlePlanClick(plan)}
+                disabled={plan.type === 'custom' && (customLoading || customStatus === 'success')}
                 style={{
                   width: '100%',
                   padding: '1rem',
                   borderRadius: '0.75rem',
                   border: plan.popular ? 'none' : '1px solid rgba(255,255,255,0.2)',
-                  background: plan.popular ? '#c8f542' : 'transparent',
-                  color: plan.popular ? '#0a0a0a' : 'white',
+                  background: plan.type === 'custom' && customStatus === 'success' ? '#34d399' 
+                    : plan.type === 'custom' && customStatus === 'error' ? '#ef4444'
+                    : plan.popular ? '#c8f542' : 'transparent',
+                  color: plan.type === 'custom' && customStatus ? 'white' : plan.popular ? '#0a0a0a' : 'white',
                   fontWeight: 600,
-                  cursor: 'pointer',
+                  cursor: plan.type === 'custom' && (customLoading || customStatus === 'success') ? 'not-allowed' : 'pointer',
+                  opacity: plan.type === 'custom' && customLoading ? 0.7 : 1,
                   transition: 'all 0.3s ease',
                 }}
               >
-                {plan.cta}
+                {plan.type === 'custom' 
+                  ? customLoading ? 'Sending...' 
+                    : customStatus === 'success' ? '✓ Request Sent!' 
+                    : customStatus === 'error' ? 'Failed, try again' 
+                    : plan.cta
+                  : plan.cta}
               </button>
             </div>
           ))}

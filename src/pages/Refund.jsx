@@ -54,7 +54,15 @@ const Refund = () => {
           </section>
 
           <section style={{ marginBottom: '2rem' }}>
-            <h2 style={{ color: 'white', fontSize: '1.5rem', marginBottom: '1rem' }}>5. Important Notes</h2>
+            <h2 style={{ color: 'white', fontSize: '1.5rem', marginBottom: '1rem' }}>5. Payment Gateway</h2>
+            <p>
+              All payments are processed securely through Razorpay. We do not store your payment details (card numbers, UPI IDs, etc.) on our servers. 
+              For any payment-related disputes, please contact us at <a href="mailto:ekanshrajput1607@gmail.com" style={{ color: '#c8f542' }}>ekanshrajput1607@gmail.com</a> and we will work with Razorpay to resolve the issue.
+            </p>
+          </section>
+
+          <section style={{ marginBottom: '2rem' }}>
+            <h2 style={{ color: 'white', fontSize: '1.5rem', marginBottom: '1rem' }}>6. Important Notes</h2>
             <ul style={{ paddingLeft: '1.5rem' }}>
               <li style={{ marginBottom: '0.5rem' }}>We recommend trying our free tier before subscribing to a paid plan</li>
               <li style={{ marginBottom: '0.5rem' }}>Please review our features carefully before making a purchase</li>
@@ -63,7 +71,7 @@ const Refund = () => {
           </section>
 
           <section style={{ marginBottom: '2rem' }}>
-            <h2 style={{ color: 'white', fontSize: '1.5rem', marginBottom: '1rem' }}>6. Contact Us</h2>
+            <h2 style={{ color: 'white', fontSize: '1.5rem', marginBottom: '1rem' }}>7. Contact Us</h2>
             <p>
               For any questions regarding our Cancellation Policy, please contact us:
             </p>

@@ -87,6 +87,7 @@ const Privacy = () => {
             
             <h3 style={{ color: '#c8f542', fontSize: '1.1rem', marginBottom: '0.5rem', marginTop: '1rem' }}>5.1 Service Providers</h3>
             <ul style={{ paddingLeft: '1.5rem', marginBottom: '1rem' }}>
+              <li style={{ marginBottom: '0.5rem' }}><strong>Razorpay:</strong> Processes payments for subscriptions. When you make a payment, your payment information (card details, UPI ID, etc.) is handled directly by Razorpay. We do not store your payment credentials. Razorpay's privacy policy: <a href="https://razorpay.com/privacy/" style={{ color: '#c8f542' }}>https://razorpay.com/privacy/</a></li>
               <li style={{ marginBottom: '0.5rem' }}><strong>OpenAI:</strong> When you use compression, your conversation text is sent to OpenAI's API for processing. OpenAI's privacy policy applies: <a href="https://openai.com/privacy" style={{ color: '#c8f542' }}>https://openai.com/privacy</a></li>
               <li style={{ marginBottom: '0.5rem' }}><strong>MongoDB Atlas:</strong> Hosts our account database. MongoDB's privacy policy: <a href="https://www.mongodb.com/legal/privacy-policy" style={{ color: '#c8f542' }}>https://www.mongodb.com/legal/privacy-policy</a></li>
               <li style={{ marginBottom: '0.5rem' }}><strong>Vercel:</strong> Hosts our website and API. Vercel's privacy policy: <a href="https://vercel.com/legal/privacy-policy" style={{ color: '#c8f542' }}>https://vercel.com/legal/privacy-policy</a></li>
@@ -169,7 +170,13 @@ const Privacy = () => {
               If you have any questions about this Privacy Policy or wish to exercise your data rights, please contact us at:
             </p>
             <p style={{ marginTop: '1rem' }}>
+              <strong>Business Name:</strong> ContextSwitch
+            </p>
+            <p style={{ marginTop: '0.5rem' }}>
               <strong>Email:</strong> <a href="mailto:ekanshrajput1607@gmail.com" style={{ color: '#c8f542' }}>ekanshrajput1607@gmail.com</a>
+            </p>
+            <p style={{ marginTop: '0.5rem' }}>
+              <strong>Address:</strong> India
             </p>
             <p style={{ marginTop: '0.5rem' }}>
               <strong>Website:</strong> <a href="https://www.context-switch.dev" style={{ color: '#c8f542' }}>https://www.context-switch.dev</a>
