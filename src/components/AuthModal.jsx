@@ -1,69 +1,93 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 
-const API_URL = 'https://context-switch-backend.vercel.app/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://context-switch-backend.vercel.app/api';
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const AuthModal = ({ isOpen, onClose }) => {
-  const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError('');
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleGoogleResponse = useCallback(async (response) => {
     setLoading(true);
     setError('');
     setSuccess('');
 
     try {
-      const endpoint = isLogin ? '/auth/login' : '/auth/signup';
-      const body = isLogin 
-        ? { email: formData.email, password: formData.password }
-        : { name: formData.name, email: formData.email, password: formData.password };
-
-      const response = await fetch(`${API_URL}${endpoint}`, {
+      const res = await fetch(`${API_URL}/auth/google`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential: response.credential }),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Something went wrong');
+      if (!res.ok) {
+        throw new Error(data.message || 'Google sign-in failed');
       }
 
-      // Store token in localStorage
       localStorage.setItem('contextswitch_token', data.token);
       localStorage.setItem('contextswitch_user', JSON.stringify(data.user));
 
-      setSuccess(isLogin ? 'Logged in successfully!' : 'Account created successfully!');
-      
-      // Close modal after success
+      setSuccess('Signed in successfully!');
+
       setTimeout(() => {
         onClose();
         window.location.reload();
-      }, 1500);
-
+      }, 1000);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [onClose]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Load Google Identity Services script
+    const loadGoogleScript = () => {
+      if (document.getElementById('google-gsi-script')) {
+        initializeGoogle();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.id = 'google-gsi-script';
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = initializeGoogle;
+      document.head.appendChild(script);
+    };
+
+    const initializeGoogle = () => {
+      if (!window.google?.accounts?.id) {
+        setTimeout(initializeGoogle, 100);
+        return;
+      }
+
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse,
+      });
+
+      const buttonDiv = document.getElementById('google-signin-btn');
+      if (buttonDiv) {
+        window.google.accounts.id.renderButton(buttonDiv, {
+          theme: 'filled_black',
+          size: 'large',
+          width: 352,
+          text: 'continue_with',
+          shape: 'rectangular',
+          logo_alignment: 'left',
+        });
+      }
+    };
+
+    loadGoogleScript();
+  }, [isOpen, handleGoogleResponse]);
 
   if (!isOpen) return null;
 
@@ -114,160 +138,60 @@ const AuthModal = ({ isOpen, onClose }) => {
             </svg>
           </div>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'white', marginBottom: '0.5rem' }}>
-            {isLogin ? 'Welcome back' : 'Create account'}
+            Welcome to ContextSwitch
           </h2>
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.875rem' }}>
-            {isLogin ? 'Sign in to your ContextSwitch account' : 'Get started with ContextSwitch'}
+            Sign in with your Google account to continue
           </p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit}>
-          {!isLogin && (
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
-                Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required={!isLogin}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1rem',
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '0.5rem',
-                  color: 'white',
-                  fontSize: '1rem',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                }}
-                placeholder="Your name"
-              />
-            </div>
-          )}
-
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              style={{
-                width: '100%',
-                padding: '0.75rem 1rem',
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '0.5rem',
-                color: 'white',
-                fontSize: '1rem',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
-              placeholder="you@example.com"
-            />
-          </div>
-
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              minLength={8}
-              style={{
-                width: '100%',
-                padding: '0.75rem 1rem',
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '0.5rem',
-                color: 'white',
-                fontSize: '1rem',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
-              placeholder="Min. 8 characters"
-            />
-          </div>
-
-          {error && (
+        {/* Google Sign-In Button */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+          {loading ? (
             <div style={{
-              padding: '0.75rem',
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              borderRadius: '0.5rem',
-              color: '#ef4444',
+              padding: '0.875rem 2rem',
+              color: 'rgba(255,255,255,0.6)',
               fontSize: '0.875rem',
-              marginBottom: '1rem',
             }}>
-              {error}
+              Signing in...
             </div>
+          ) : (
+            <div id="google-signin-btn" />
           )}
+        </div>
 
-          {success && (
-            <div style={{
-              padding: '0.75rem',
-              background: 'rgba(52, 211, 153, 0.1)',
-              border: '1px solid rgba(52, 211, 153, 0.3)',
-              borderRadius: '0.5rem',
-              color: '#34d399',
-              fontSize: '0.875rem',
-              marginBottom: '1rem',
-            }}>
-              {success}
-            </div>
-          )}
+        {error && (
+          <div style={{
+            padding: '0.75rem',
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            borderRadius: '0.5rem',
+            color: '#ef4444',
+            fontSize: '0.875rem',
+            marginBottom: '1rem',
+            textAlign: 'center',
+          }}>
+            {error}
+          </div>
+        )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '0.875rem',
-              background: '#c8f542',
-              color: '#0a0a0a',
-              fontWeight: 600,
-              borderRadius: '0.5rem',
-              border: 'none',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              fontSize: '1rem',
-              opacity: loading ? 0.7 : 1,
-            }}
-          >
-            {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
-          </button>
-        </form>
+        {success && (
+          <div style={{
+            padding: '0.75rem',
+            background: 'rgba(52, 211, 153, 0.1)',
+            border: '1px solid rgba(52, 211, 153, 0.3)',
+            borderRadius: '0.5rem',
+            color: '#34d399',
+            fontSize: '0.875rem',
+            marginBottom: '1rem',
+            textAlign: 'center',
+          }}>
+            {success}
+          </div>
+        )}
 
-        {/* Toggle */}
-        <p style={{ textAlign: 'center', marginTop: '1.5rem', color: 'rgba(255,255,255,0.5)', fontSize: '0.875rem' }}>
-          {isLogin ? "Don't have an account? " : "Already have an account? "}
-          <button
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setError('');
-              setSuccess('');
-            }}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#c8f542',
-              cursor: 'pointer',
-              fontWeight: 600,
-            }}
-          >
-            {isLogin ? 'Sign up' : 'Sign in'}
-          </button>
+        <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem', marginTop: '0.5rem' }}>
+          By signing in, you agree to our Terms of Service and Privacy Policy.
         </p>
 
         {/* Close button */}
