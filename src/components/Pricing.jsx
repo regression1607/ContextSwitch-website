@@ -346,8 +346,26 @@ const Pricing = () => {
           ))}
         </div>
 
+        {/* International payment notice */}
+        {!isIndia && (
+          <div style={{
+            textAlign: 'center',
+            marginTop: '2rem',
+            padding: '1rem 1.5rem',
+            background: 'rgba(245, 158, 11, 0.08)',
+            border: '1px solid rgba(245, 158, 11, 0.2)',
+            borderRadius: '0.75rem',
+            maxWidth: '600px',
+            margin: '2rem auto 0',
+          }}>
+            <p style={{ color: '#f59e0b', fontSize: '0.875rem', fontWeight: 500, margin: 0 }}>
+              International payments are currently being set up. This will be resolved soon. For now, please contact us for manual payment assistance.
+            </p>
+          </div>
+        )}
+
         {/* Footer note */}
-        <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+        <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.875rem' }}>
             Prices in {isIndia ? '₹ INR' : '$ USD'}. Cancel anytime. Try the free tier first before upgrading.
           </p>
