@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SubscriptionModal from '../components/SubscriptionModal';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://context-switch-backend.vercel.app/api';
 
@@ -9,8 +10,21 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [history, setHistory] = useState([]);
-  const [upgradeLoading, setUpgradeLoading] = useState(false);
-  const [upgradeMessage, setUpgradeMessage] = useState('');
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [isIndia, setIsIndia] = useState(true);
+
+  useEffect(() => {
+    const detectCountry = async () => {
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        const data = await res.json();
+        setIsIndia(data.country_code === 'IN');
+      } catch {
+        setIsIndia(true);
+      }
+    };
+    detectCountry();
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('contextswitch_token');
@@ -66,37 +80,11 @@ const Profile = () => {
     navigate('/');
   };
 
-  const handleUpgrade = async () => {
-    setUpgradeLoading(true);
-    setUpgradeMessage('');
-    
-    try {
-      const response = await fetch(`${API_URL}/contact`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: userData?.name || 'User',
-          email: userData?.email || '',
-          phone: '',
-          subject: 'Upgrade to Pro Request',
-          message: `User ${userData?.name} (${userData?.email}) wants to upgrade to Pro plan.\n\nCurrent Plan: ${subscription?.plan || 'free'}\nMonthly Compressions Used: ${usage?.monthlyCompressions || 0}/${limits?.maxCompressionsPerMonth || 50}\nTotal Compressions: ${usage?.totalCompressions || 0}\nMember Since: ${userData?.createdAt ? formatDate(userData.createdAt) : 'N/A'}`
-        }),
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        setUpgradeMessage('success');
-      } else {
-        setUpgradeMessage('error');
-      }
-    } catch (err) {
-      console.error('Upgrade request error:', err);
-      setUpgradeMessage('error');
-    } finally {
-      setUpgradeLoading(false);
+  const handleUpgradeSuccess = (data) => {
+    // Refresh profile data after successful payment
+    const token = localStorage.getItem('contextswitch_token');
+    if (token) {
+      fetchProfile(token);
     }
   };
 
@@ -131,7 +119,21 @@ const Profile = () => {
     );
   }
 
-  const { user: userData, subscription, usage, limits } = user || {};
+  const { user: userData, subscription: rawSubscription, usage, limits } = user || {};
+
+  // Calculate daysRemaining on frontend if backend didn't provide it
+  const subscription = rawSubscription ? {
+    ...rawSubscription,
+    daysRemaining: rawSubscription.daysRemaining ?? (
+      rawSubscription.endDate && rawSubscription.plan !== 'free'
+        ? Math.max(0, Math.ceil((new Date(rawSubscription.endDate) - new Date()) / (1000 * 60 * 60 * 24)))
+        : null
+    ),
+    isExpired: rawSubscription.isExpired ?? (
+      rawSubscription.status === 'expired' || 
+      (rawSubscription.endDate && new Date(rawSubscription.endDate) < new Date())
+    ),
+  } : {};
 
   return (
     <div style={styles.container}>
@@ -192,32 +194,61 @@ const Profile = () => {
               </div>
             </div>
             
+            {/* Subscription status for paid plans */}
+            {subscription?.plan !== 'free' && subscription?.endDate && (
+              <div style={{
+                marginTop: '1rem',
+                padding: '0.75rem 1rem',
+                borderRadius: '0.5rem',
+                background: subscription?.isExpired ? 'rgba(239,68,68,0.1)' : 
+                             subscription?.daysRemaining <= 3 ? 'rgba(245,158,11,0.1)' : 
+                             'rgba(52,211,153,0.1)',
+                border: `1px solid ${subscription?.isExpired ? 'rgba(239,68,68,0.3)' : 
+                                      subscription?.daysRemaining <= 3 ? 'rgba(245,158,11,0.3)' : 
+                                      'rgba(52,211,153,0.3)'}`,
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <span style={{ 
+                      fontSize: '0.8rem', 
+                      color: subscription?.isExpired ? '#ef4444' : 
+                             subscription?.daysRemaining <= 3 ? '#f59e0b' : '#34d399'
+                    }}>
+                      {subscription?.isExpired ? '⚠ Subscription Expired' : 
+                       `${subscription.daysRemaining} day${subscription.daysRemaining === 1 ? '' : 's'} remaining`}
+                    </span>
+                    <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', marginTop: '0.25rem' }}>
+                      Expires: {formatDate(subscription.endDate)}
+                    </div>
+                  </div>
+                  {(subscription?.isExpired || subscription?.daysRemaining <= 7) && (
+                    <button 
+                      onClick={() => setShowUpgradeModal(true)}
+                      style={{
+                        padding: '0.4rem 1rem',
+                        background: '#c8f542',
+                        color: '#0a0a0a',
+                        border: 'none',
+                        borderRadius: '0.4rem',
+                        fontWeight: 600,
+                        fontSize: '0.8rem',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {subscription?.isExpired ? 'Renew Now' : 'Renew'}
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
             {subscription?.plan === 'free' && (
-              <>
-                <button 
-                  onClick={handleUpgrade}
-                  disabled={upgradeLoading || upgradeMessage === 'success'}
-                  style={{
-                    ...styles.upgradeBtn,
-                    opacity: upgradeLoading || upgradeMessage === 'success' ? 0.7 : 1,
-                    cursor: upgradeLoading || upgradeMessage === 'success' ? 'not-allowed' : 'pointer'
-                  }}
-                >
-                  {upgradeLoading ? 'Sending...' : 
-                   upgradeMessage === 'success' ? 'Request Sent!' : 
-                   'Upgrade to Pro'}
-                </button>
-                {upgradeMessage === 'success' && (
-                  <p style={styles.upgradeSuccess}>
-                    We've received your upgrade request! We'll contact you shortly at {userData?.email}
-                  </p>
-                )}
-                {upgradeMessage === 'error' && (
-                  <p style={styles.upgradeError}>
-                    Failed to send request. Please try again or contact us directly.
-                  </p>
-                )}
-              </>
+              <button 
+                onClick={() => setShowUpgradeModal(true)}
+                style={styles.upgradeBtn}
+              >
+                Upgrade to Pro
+              </button>
             )}
           </div>
 
@@ -271,6 +302,15 @@ const Profile = () => {
           Member since {userData?.createdAt ? formatDate(userData.createdAt) : 'N/A'}
         </p>
       </div>
+
+      <SubscriptionModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        plan="Pro"
+        currency={isIndia ? 'INR' : 'USD'}
+        isIndia={isIndia}
+        onSuccess={handleUpgradeSuccess}
+      />
     </div>
   );
 };

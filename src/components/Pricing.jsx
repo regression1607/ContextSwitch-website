@@ -6,111 +6,116 @@ const PRICING = {
   INR: {
     symbol: '₹',
     currency: 'INR',
-    free: 0,
-    pro: 49,
-    enterprise: 499,
+    pro: { monthly: 69, monthlyOriginal: 99, yearly: 699, yearlyOriginal: 1299 },
+    enterprise: { monthly: 369, monthlyOriginal: 499, yearly: 3699, yearlyOriginal: 5499 },
   },
   USD: {
     symbol: '$',
     currency: 'USD',
-    free: 0,
-    pro: 9.99,
-    enterprise: 29.99,
+    pro: { monthly: 3.99, monthlyOriginal: 6, yearly: 39, yearlyOriginal: 79 },
+    enterprise: { monthly: 9.99, monthlyOriginal: 19.99, yearly: 99, yearlyOriginal: 299 },
   }
 };
 
-const getPlans = (pricing) => [
-  {
-    name: 'Free',
-    price: `${pricing.symbol}${pricing.free}`,
-    period: 'forever',
-    description: 'Perfect for getting started',
-    features: [
-      'Unlimited context saves',
-      'Unlimited project organization',
-      'Load context anywhere',
-      'All AI platforms supported',
-      'Local storage',
-    ],
-    cta: 'Get Started Free',
-    popular: false,
-    color: '#ffffff',
-    type: 'free',
-  },
-  {
-    name: 'Pro',
-    price: `${pricing.symbol}${pricing.pro}`,
-    period: 'month',
-    description: 'Best for regular AI users',
-    features: [
-      '50 compressions/month',
-      'Cloud sync (coming soon)',
-      'Priority support',
-      'Early access to features',
-      'Export/Import projects',
-    ],
-    cta: 'Upgrade to Pro',
-    popular: true,
-    color: '#c8f542',
-    type: 'paid',
-  },
-  {
-    name: 'Enterprise',
-    price: `${pricing.symbol}${pricing.enterprise}`,
-    period: 'month',
-    description: 'For power users & teams',
-    features: [
-      '200 compressions',
-      'Team sharing (coming soon)',
-      'API access',
-      'Dedicated support',
-      'Custom integrations',
-    ],
-    cta: 'Get Enterprise',
-    popular: false,
-    color: '#a78bfa',
-    type: 'paid',
-  },
-  {
-    name: 'Custom',
-    price: 'Custom',
-    period: 'quote',
-    description: 'Tailored for your organization',
-    features: [
-      'Custom user limits',
-      'On-premise deployment',
-      'SLA & compliance',
-      'Dedicated account manager',
-      'Custom training & onboarding',
-    ],
-    cta: 'Contact Sales',
-    popular: false,
-    color: '#60a5fa',
-    type: 'custom',
-  },
-];
+const getPlans = (pricing, billingCycle) => {
+  const cycle = billingCycle; // 'monthly' or 'yearly'
+  const period = cycle === 'yearly' ? 'year' : 'month';
+
+  return [
+    {
+      name: 'Free',
+      price: `${pricing.symbol}0`,
+      period: 'forever',
+      description: 'Perfect for getting started',
+      features: [
+        'Unlimited context saves',
+        'Unlimited project organization',
+        'Load context anywhere',
+        'All AI platforms supported',
+        'Local storage',
+      ],
+      cta: 'Get Started Free',
+      popular: false,
+      color: '#ffffff',
+      type: 'free',
+    },
+    {
+      name: 'Pro',
+      price: `${pricing.symbol}${pricing.pro[cycle]}`,
+      originalPrice: `${pricing.symbol}${pricing.pro[`${cycle}Original`]}`,
+      period,
+      description: 'Best for regular AI users',
+      features: [
+        '50 compressions/month',
+        'Cloud sync (coming soon)',
+        'Priority support',
+        'Early access to features',
+        'Export/Import projects',
+      ],
+      cta: 'Upgrade to Pro',
+      popular: true,
+      color: '#c8f542',
+      type: 'paid',
+      savings: cycle === 'yearly' ? Math.round((1 - pricing.pro.yearly / (pricing.pro.monthly * 12)) * 100) : null,
+    },
+    {
+      name: 'Enterprise',
+      price: `${pricing.symbol}${pricing.enterprise[cycle]}`,
+      originalPrice: `${pricing.symbol}${pricing.enterprise[`${cycle}Original`]}`,
+      period,
+      description: 'For power users & teams',
+      features: [
+        '200 compressions',
+        'Team sharing (coming soon)',
+        'API access',
+        'Dedicated support',
+        'Custom integrations',
+      ],
+      cta: 'Get Enterprise',
+      popular: false,
+      color: '#a78bfa',
+      type: 'paid',
+      savings: cycle === 'yearly' ? Math.round((1 - pricing.enterprise.yearly / (pricing.enterprise.monthly * 12)) * 100) : null,
+    },
+    {
+      name: 'Custom',
+      price: 'Custom',
+      period: 'quote',
+      description: 'Tailored for your organization',
+      features: [
+        'Custom user limits',
+        'On-premise deployment',
+        'SLA & compliance',
+        'Dedicated account manager',
+        'Custom training & onboarding',
+      ],
+      cta: 'Contact Sales',
+      popular: false,
+      color: '#60a5fa',
+      type: 'custom',
+    },
+  ];
+};
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://context-switch-backend.vercel.app/api';
 
 const Pricing = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('');
-  const [isIndia, setIsIndia] = useState(true); // Default to India
+  const [billingCycle, setBillingCycle] = useState('monthly');
+  const [isIndia, setIsIndia] = useState(true);
   const [loading, setLoading] = useState(true);
   const [customLoading, setCustomLoading] = useState(false);
   const [customStatus, setCustomStatus] = useState('');
 
-  // Detect user's country on component mount
+  // Auto-detect currency silently
   useEffect(() => {
     const detectCountry = async () => {
       try {
-        // Using free IP geolocation API
         const response = await fetch('https://ipapi.co/json/');
         const data = await response.json();
         setIsIndia(data.country_code === 'IN');
-      } catch (error) {
-        // Default to India on error
-        console.log('Could not detect location, defaulting to INR');
+      } catch {
         setIsIndia(true);
       } finally {
         setLoading(false);
@@ -120,7 +125,7 @@ const Pricing = () => {
   }, []);
 
   const pricing = isIndia ? PRICING.INR : PRICING.USD;
-  const plans = getPlans(pricing);
+  const plans = getPlans(pricing, billingCycle);
 
   const handlePlanClick = async (plan) => {
     if (plan.type === 'free') {
@@ -170,6 +175,64 @@ const Pricing = () => {
             Start free and upgrade when you need more compression power.
             No hidden fees, cancel anytime.
           </p>
+
+          {/* Monthly / Yearly Toggle */}
+          <div style={{ 
+            display: 'inline-flex', 
+            alignItems: 'center', 
+            gap: '0', 
+            marginTop: '2rem',
+            background: 'rgba(255,255,255,0.05)',
+            borderRadius: '9999px',
+            padding: '0.25rem',
+            border: '1px solid rgba(255,255,255,0.1)',
+          }}>
+            <button
+              onClick={() => setBillingCycle('monthly')}
+              style={{
+                padding: '0.6rem 1.5rem',
+                borderRadius: '9999px',
+                border: 'none',
+                background: billingCycle === 'monthly' ? '#c8f542' : 'transparent',
+                color: billingCycle === 'monthly' ? '#0a0a0a' : 'rgba(255,255,255,0.6)',
+                fontWeight: 600,
+                fontSize: '0.875rem',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+              }}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingCycle('yearly')}
+              style={{
+                padding: '0.6rem 1.5rem',
+                borderRadius: '9999px',
+                border: 'none',
+                background: billingCycle === 'yearly' ? '#c8f542' : 'transparent',
+                color: billingCycle === 'yearly' ? '#0a0a0a' : 'rgba(255,255,255,0.6)',
+                fontWeight: 600,
+                fontSize: '0.875rem',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+              }}
+            >
+              Yearly
+              <span style={{
+                fontSize: '0.7rem',
+                padding: '0.15rem 0.5rem',
+                borderRadius: '9999px',
+                background: billingCycle === 'yearly' ? 'rgba(0,0,0,0.15)' : 'rgba(52,211,153,0.15)',
+                color: billingCycle === 'yearly' ? '#0a0a0a' : '#34d399',
+                fontWeight: 700,
+              }}>
+                Save 15%+
+              </span>
+            </button>
+          </div>
         </div>
 
         {/* Pricing Cards */}
@@ -215,8 +278,25 @@ const Pricing = () => {
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
+                {plan.originalPrice && (
+                  <span style={{ fontSize: '1.25rem', color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through', marginRight: '0.5rem' }}>{plan.originalPrice}</span>
+                )}
                 <span className="price-display" style={{ fontSize: '3rem', fontWeight: 700, color: 'white' }}>{plan.price}</span>
                 <span style={{ color: 'rgba(255,255,255,0.5)', marginLeft: '0.5rem' }}>/{plan.period}</span>
+                {plan.savings && (
+                  <div style={{ marginTop: '0.5rem' }}>
+                    <span style={{
+                      fontSize: '0.75rem',
+                      padding: '0.2rem 0.6rem',
+                      borderRadius: '9999px',
+                      background: 'rgba(52,211,153,0.15)',
+                      color: '#34d399',
+                      fontWeight: 600,
+                    }}>
+                      Save {plan.savings}%
+                    </span>
+                  </div>
+                )}
               </div>
 
               <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', flex: 1 }}>
@@ -266,31 +346,10 @@ const Pricing = () => {
           ))}
         </div>
 
-        {/* Currency Toggle & FAQ hint */}
+        {/* Footer note */}
         <div style={{ textAlign: 'center', marginTop: '3rem' }}>
-          <div style={{ marginBottom: '1rem' }}>
-            <button
-              onClick={() => setIsIndia(!isIndia)}
-              style={{
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '9999px',
-                padding: '0.5rem 1rem',
-                color: 'rgba(255,255,255,0.6)',
-                cursor: 'pointer',
-                fontSize: '0.75rem',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}
-            >
-              <span>🌍</span>
-              Showing prices in {isIndia ? '₹ INR (India)' : '$ USD (International)'}
-              <span style={{ fontSize: '0.65rem' }}>• Click to change</span>
-            </button>
-          </div>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.875rem' }}>
-            Cancel anytime. Try the free tier first before upgrading.
+            Prices in {isIndia ? '₹ INR' : '$ USD'}. Cancel anytime. Try the free tier first before upgrading.
           </p>
         </div>
       </div>
@@ -301,6 +360,7 @@ const Pricing = () => {
         plan={selectedPlan}
         currency={pricing.currency}
         isIndia={isIndia}
+        initialBillingCycle={billingCycle}
       />
     </section>
   );

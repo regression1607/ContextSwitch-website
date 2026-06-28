@@ -1,76 +1,176 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://context-switch-backend.vercel.app/api';
+const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
 // Plan pricing configuration based on currency
 const PLAN_CONFIG = {
   INR: {
     Pro: {
-      monthly: { price: '₹499', priceId: 'pro_monthly_inr', amount: 499 },
-      yearly: { price: '₹4,999', priceId: 'pro_yearly_inr', amount: 4999, savings: 'Save 17%' }
+      monthly: { price: '₹69', originalPrice: '₹99', amount: 69 },
+      yearly: { price: '₹699', originalPrice: '₹1,299', amount: 699, savings: 'Save 46%' }
     },
     Enterprise: {
-      monthly: { price: '₹999', priceId: 'enterprise_monthly_inr', amount: 999 },
-      yearly: { price: '₹9,999', priceId: 'enterprise_yearly_inr', amount: 9999, savings: 'Save 17%' }
+      monthly: { price: '₹369', originalPrice: '₹499', amount: 369 },
+      yearly: { price: '₹3,699', originalPrice: '₹5,499', amount: 3699, savings: 'Save 33%' }
     }
   },
   USD: {
     Pro: {
-      monthly: { price: '$9.99', priceId: 'pro_monthly_usd', amount: 9.99 },
-      yearly: { price: '$99.99', priceId: 'pro_yearly_usd', amount: 99.99, savings: 'Save 17%' }
+      monthly: { price: '$3.99', originalPrice: '$6', amount: 3.99 },
+      yearly: { price: '$39', originalPrice: '$79', amount: 39, savings: 'Save 51%' }
     },
     Enterprise: {
-      monthly: { price: '$29.99', priceId: 'enterprise_monthly_usd', amount: 29.99 },
-      yearly: { price: '$299.99', priceId: 'enterprise_yearly_usd', amount: 299.99, savings: 'Save 17%' }
+      monthly: { price: '$9.99', originalPrice: '$19.99', amount: 9.99 },
+      yearly: { price: '$99', originalPrice: '$299', amount: 99, savings: 'Save 67%' }
     }
   }
 };
 
-const SubscriptionModal = ({ isOpen, onClose, plan, currency = 'INR', isIndia = true }) => {
-  const [billingCycle, setBillingCycle] = useState('monthly');
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
+const SubscriptionModal = ({ isOpen, onClose, plan, currency = 'INR', isIndia = true, onSuccess, initialBillingCycle = 'monthly' }) => {
+  const [billingCycle, setBillingCycle] = useState(initialBillingCycle);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ type: '', message: '' });
 
-  const handleSubscriptionRequest = async () => {
+  // Sync billing cycle when prop changes (user switches toggle on Pricing page)
+  useEffect(() => {
+    setBillingCycle(initialBillingCycle);
+  }, [initialBillingCycle]);
+
+  const handlePayment = async () => {
+    const token = localStorage.getItem('contextswitch_token');
+    if (!token) {
+      setStatus({ type: 'error', message: 'Please login first to subscribe.' });
+      return;
+    }
+
     setLoading(true);
     setStatus({ type: '', message: '' });
 
     try {
-      const currencyConfig = PLAN_CONFIG[currency] || PLAN_CONFIG.INR;
-      const planConfig = currencyConfig[plan];
-      const priceConfig = planConfig[billingCycle];
-      
-      // Get user info if logged in
-      const userData = JSON.parse(localStorage.getItem('contextswitch_user') || '{}');
+      // Load Razorpay SDK
+      const loaded = await loadRazorpayScript();
+      if (!loaded) {
+        setStatus({ type: 'error', message: 'Failed to load payment gateway. Please try again.' });
+        setLoading(false);
+        return;
+      }
 
-      // Send subscription interest email to admin
-      const response = await fetch(`${API_URL}/contact/subscription`, {
+      // Create order on backend
+      const planKey = plan.toLowerCase();
+      const response = await fetch(`${API_URL}/payment/create-order`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ 
-          name: userData.name || 'Guest User',
-          email: userData.email || 'Not logged in',
-          phone: '',
-          plan: `${plan} - ${billingCycle} (${priceConfig.price})`,
-          message: `User wants to subscribe to ${plan} plan.\n\nBilling: ${billingCycle}\nPrice: ${priceConfig.price}\nCurrency: ${currency}`
+        body: JSON.stringify({
+          plan: planKey,
+          billingCycle,
+          currency: currency,
         }),
       });
 
-      const data = await response.json();
+      const orderData = await response.json();
 
-      if (data.success) {
-        setStatus({ 
-          type: 'success', 
-          message: 'Request sent! We will contact you within 24 hours to complete your subscription.' 
-        });
-      } else {
-        setStatus({ type: 'error', message: data.message || 'Failed to send request' });
+      if (!orderData.success) {
+        setStatus({ type: 'error', message: orderData.message || 'Failed to create order' });
+        setLoading(false);
+        return;
       }
+
+      // Get user info
+      const userData = JSON.parse(localStorage.getItem('contextswitch_user') || '{}');
+
+      // Open Razorpay checkout
+      const options = {
+        key: orderData.data.keyId || RAZORPAY_KEY_ID,
+        amount: orderData.data.amount,
+        currency: orderData.data.currency,
+        name: 'ContextSwitch',
+        description: `${plan} Plan - ${billingCycle === 'yearly' ? 'Yearly' : 'Monthly'}`,
+        order_id: orderData.data.orderId,
+        handler: async function (response) {
+          // Verify payment on backend
+          try {
+            const verifyRes = await fetch(`${API_URL}/payment/verify`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                plan: planKey,
+                billingCycle,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (verifyData.success) {
+              setStatus({ type: 'success', message: verifyData.message || `Successfully upgraded to ${plan}!` });
+              // Update local storage with new subscription info
+              const storedUser = JSON.parse(localStorage.getItem('contextswitch_user') || '{}');
+              storedUser.subscription = verifyData.data.subscription;
+              storedUser.limits = verifyData.data.limits;
+              localStorage.setItem('contextswitch_user', JSON.stringify(storedUser));
+              if (onSuccess) onSuccess(verifyData.data);
+              // Auto-close modal after 2 seconds
+              setTimeout(() => onClose(), 2000);
+            } else {
+              setStatus({ type: 'error', message: verifyData.message || 'Payment verification failed' });
+            }
+          } catch (err) {
+            setStatus({ type: 'error', message: 'Payment verification failed. Contact support if amount was deducted.' });
+          }
+        },
+        prefill: {
+          name: userData.name || '',
+          email: userData.email || '',
+        },
+        theme: {
+          color: '#c8f542',
+          backdrop_color: 'rgba(10, 10, 10, 0.95)',
+        },
+        modal: {
+          ondismiss: function () {
+            setLoading(false);
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+
+      rzp.on('payment.failed', function (response) {
+        setStatus({
+          type: 'error',
+          message: response.error?.description || 'Payment failed. Please try again.',
+        });
+        setLoading(false);
+      });
+
+      rzp.open();
     } catch (error) {
-      setStatus({ type: 'error', message: 'Failed to send request. Please try again.' });
+      console.error('Payment error:', error);
+      setStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -129,7 +229,7 @@ const SubscriptionModal = ({ isOpen, onClose, plan, currency = 'INR', isIndia = 
             Upgrade to {plan}
           </h2>
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.875rem' }}>
-            Choose your billing cycle and proceed to checkout
+            Choose your billing cycle and pay securely
           </p>
         </div>
 
@@ -184,11 +284,21 @@ const SubscriptionModal = ({ isOpen, onClose, plan, currency = 'INR', isIndia = 
           border: '1px solid rgba(255,255,255,0.05)',
           marginBottom: '1.5rem'
         }}>
+          {currentPrice.originalPrice && (
+            <div style={{ fontSize: '1.25rem', color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through', marginBottom: '0.25rem' }}>
+              {currentPrice.originalPrice}
+            </div>
+          )}
           <div style={{ fontSize: '3rem', fontWeight: 700, color: 'white' }}>
             {currentPrice.price}
           </div>
           <div style={{ color: 'rgba(255,255,255,0.5)' }}>
             per {billingCycle === 'monthly' ? 'month' : 'year'}
+            {currentPrice.savings && (
+              <span style={{ marginLeft: '0.5rem', color: '#34d399', fontWeight: 600 }}>
+                ({currentPrice.savings})
+              </span>
+            )}
           </div>
         </div>
 
@@ -254,7 +364,7 @@ const SubscriptionModal = ({ isOpen, onClose, plan, currency = 'INR', isIndia = 
         )}
 
         <button
-          onClick={handleSubscriptionRequest}
+          onClick={handlePayment}
           disabled={loading || status.type === 'success'}
           style={{
             width: '100%',
@@ -273,25 +383,25 @@ const SubscriptionModal = ({ isOpen, onClose, plan, currency = 'INR', isIndia = 
             gap: '0.5rem'
           }}
         >
-          {loading ? 'Sending Request...' : status.type === 'success' ? (
+          {loading ? 'Processing...' : status.type === 'success' ? (
             <>
               <svg style={{ width: '1.25rem', height: '1.25rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              Request Sent!
+              Payment Successful!
             </>
           ) : (
             <>
-              <svg style={{ width: '1.25rem', height: '1.25rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              <svg style={{ width: '1.25rem', height: '1.25rem' }} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
-              Request Subscription
+              Pay Securely with Razorpay
             </>
           )}
         </button>
 
         <p style={{ textAlign: 'center', marginTop: '1rem', color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>
-          We'll contact you within 24 hours to complete your subscription.
+          Secure payment via Razorpay. UPI, Cards, NetBanking, Wallets accepted.
         </p>
 
         {/* Close button */}
