@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const API_URL = 'https://context-switch-backend.vercel.app/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://context-switch-backend.vercel.app/api';
 
 const CATEGORY_COLORS = {
   'prompt': { bg: 'rgba(200,245,66,0.15)', text: '#c8f542', label: 'Prompt' },

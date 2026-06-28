@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const API_URL = 'https://context-switch-backend.vercel.app/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://context-switch-backend.vercel.app/api';
 
 const CATEGORY_COLORS = {
   'prompt': { bg: 'rgba(200,245,66,0.12)', text: '#c8f542', label: 'Prompt' },

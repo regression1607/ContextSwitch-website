@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SubscriptionModal from '../components/SubscriptionModal';
 
-const API_URL = 'https://context-switch-backend.vercel.app/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://context-switch-backend.vercel.app/api';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -148,9 +148,18 @@ const Profile = () => {
           {/* User Info Card */}
           <div style={{...styles.card, flex: '1'}}>
             <div style={styles.profileHeader}>
-              <div style={styles.avatar}>
-                {(userData?.name || 'U').charAt(0).toUpperCase()}
-              </div>
+              {userData?.profilePicture ? (
+                <img 
+                  src={userData.profilePicture} 
+                  alt={userData.name}
+                  referrerPolicy="no-referrer"
+                  style={{ width: '56px', height: '56px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+                />
+              ) : (
+                <div style={styles.avatar}>
+                  {(userData?.name || 'U').charAt(0).toUpperCase()}
+                </div>
+              )}
               <div style={{flex: 1}}>
                 <h2 style={styles.userName}>{userData?.name || 'User'}</h2>
                 <p style={styles.userEmail}>{userData?.email}</p>

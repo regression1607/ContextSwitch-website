@@ -97,7 +97,7 @@ const getPlans = (pricing, billingCycle) => {
   ];
 };
 
-const API_URL = 'https://context-switch-backend.vercel.app/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://context-switch-backend.vercel.app/api';
 
 const Pricing = () => {
   const [modalOpen, setModalOpen] = useState(false);
